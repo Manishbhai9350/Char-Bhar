@@ -1,17 +1,12 @@
-import type { Line } from "../context/game/game";
+import type { Corner, Line } from "../context/game/game";
 
-interface Corner {
-  index: number;
-  x: number; // pixel position within the board
-  y: number;
-}
 
 export default function BoardLine({ corners, lines }: { corners: Corner[]; lines: Line[] }) {
   return (
     <svg className="board-lines" width="100%" height="100%">
       {lines.map((line, i) => {
-        const start = corners[line.startPieceIndex];
-        const end = corners[line.endPieceIndex];
+        const start = corners[line.startPieceIndex].position;
+        const end = corners[line.endPieceIndex].position;
         return (
           <line
             key={i}

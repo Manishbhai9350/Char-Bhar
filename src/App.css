@@ -39,6 +39,7 @@ body {
   background: var(--page-bg);
   color: var(--text-primary);
   font-family: system-ui, sans-serif;
+  overflow: hidden;
 }
 
 .board-wrapper {
@@ -75,12 +76,15 @@ body {
 }
 
 .point {
+  text-align: center;
+  color: white;
   cursor: pointer;
   position: absolute;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   width: calc(var(--point-radius) * 2);
   height: calc(var(--point-radius) * 2);
+  z-index: 10;
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
@@ -101,7 +105,7 @@ body {
 .point.valid-move {
   background: var(--highlight-valid-move);
   border: 2px solid var(--highlight-valid-move-border);
-  animation: pulse 2s ease-in-out infinite;
+  /* animation: pulse 2s ease-in-out infinite; */
 }
 .point.selected {
   box-shadow: 0 0 0 3px var(--highlight-selected);
@@ -109,13 +113,13 @@ body {
 
 @keyframes pulse {
   0% {
-    opacity:1;
+    opacity: 1;
   }
   50% {
-    opacity:0;
+    opacity: 0;
   }
   100% {
-    opacity:1;
+    opacity: 1;
   }
 }
 
@@ -148,4 +152,69 @@ body {
   top: 0;
   width: 100vw;
   height: 100vh;
+}
+
+.piece {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+
+.piece.player-1 {
+  background: var(--player-1);
+  border: 2px solid var(--player-1-border);
+}
+
+.piece.player-2 {
+  background: var(--player-2);
+  border: 2px solid var(--player-2-border);
+}
+
+.piece .ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.piece.turn {
+  cursor: grab;
+}
+
+.piece.player-1 .ring {
+  border: 2px solid var(--player-1-border);
+}
+.piece.player-2 .ring {
+  border: 2px solid var(--player-2-border);
+}
+
+.ring-1 {
+  width: 66.6%;
+  height: 66.6%;
+}
+.ring-2 {
+  width: 33.3%;
+  height: 33.3%;
+}
+
+.debug {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.debug-1 {
+  background: red;
+  z-index: 100;
+}
+.debug-2 {
+  background: green;
+  z-index: 100;
 }
