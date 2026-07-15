@@ -1,34 +1,51 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
-import { useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { PieceProps } from "../../context/game/game";
 import { useGame } from "../../context/game/game.hook";
 
 gsap.registerPlugin(Draggable);
 
-const Piece = ({ position, player, index }: PieceProps) => {
+const Piece = ({ position, player, index, corner }: PieceProps) => {
   const pieceRef = useRef<HTMLDivElement>(null);
   const draggableRef = useRef<Draggable[] | null>(null);
 
-  const { turn, TryMovePiece } = useGame();
+  const { turn, pieces, TryMovePiece, setPieces, setCorners, setTurn } =
+    useGame();
+
+  const AllPiecesPlaced = useMemo(() => {
+    let AllPlaced = true;
+
+    pieces.forEach((p) => {
+      if (p.corner !== 0 && !p.corner) {
+        AllPlaced = false;
+      }
+    });
+
+    return AllPlaced;
+  }, [pieces]);
+
+  // Always holds the latest TryMovePiece, updated every render
+  const tryMovePieceRef = useRef(TryMovePiece);
+  useEffect(() => {
+    tryMovePieceRef.current = TryMovePiece;
+  }, [TryMovePiece]);
 
   const isMyTurn = turn === player;
 
   useGSAP(() => {
     gsap.set(pieceRef.current, {
       ...position,
+      xPercent: -50,
+      yPercent: -50,
     });
 
     draggableRef.current = Draggable.create(pieceRef.current, {
       type: "x,y",
-      bounds: ".board", // constrain drag within the board container
+      bounds: ".board",
       onDragStart: function () {
         gsap.to(this.target, { scale: 1.1, duration: 0.15 });
-      },
-      onDrag: function () {
-        // this.x / this.y available here if you want live feedback,
-        // e.g. highlighting the nearest valid corner while dragging
       },
       onDragEnd: function () {
         gsap.to(this.target, { scale: 1, duration: 0.15 });
@@ -36,20 +53,72 @@ const Piece = ({ position, player, index }: PieceProps) => {
         const dropX = this.x;
         const dropY = this.y;
 
-        const moved = TryMovePiece(index, dropX, dropY);
+        const move = tryMovePieceRef.current(index, dropX, dropY);
 
-        if (!moved) {
-          // illegal move (not a neighbour, occupied, not your turn, etc.)
-          // snap back to original position
+        if (move.move == "same") {
           gsap.to(this.target, {
-            ...position,
+            x: move.fromCorner?.position.x,
+            y: move.fromCorner?.position.y,
             duration: 0.3,
             ease: "power2.out",
+            onUpdate: function () {
+              //this.update();
+            },
           });
+          return;
         }
-        // if moved, your game state update should re-render Piece
-        // with the new `position`, and the effect below will
-        // animate it there via gsap.set/to on re-mount or update
+
+        if (!move.move) {
+          gsap.to(this.target, {
+            x: position.x,
+            y: position.y,
+            duration: 0.3,
+            ease: "power2.out",
+            onUpdate: function () {
+              //this.update();
+            },
+          });
+          return;
+        }
+
+        setCorners((crns) => {
+          const updated = crns.map((C) => {
+            if (C.index === move.corner?.index) {
+              return { ...C, piece: index, player: turn };
+            }
+            if (C.index === move.fromCorner?.index) {
+              return { ...C, piece: null, player: null };
+            }
+            return C;
+          });
+
+          return updated;
+        });
+
+        setTurn((t) => (t === "1" ? "2" : "1"));
+
+        gsap.to(this.target, {
+          x: move.corner!.position.x,
+          y: move.corner!.position.y,
+          duration: 0.3,
+          ease: "power2.out",
+          onUpdate: function () {
+            //this.update();
+          },
+          onComplete: () => {
+            setPieces((pieces) =>
+              pieces.map((p) =>
+                p.index === index
+                  ? {
+                      ...p,
+                      position: move.corner!.position,
+                      corner: move.corner?.index,
+                    }
+                  : p,
+              ),
+            );
+          },
+        });
       },
     });
 
@@ -58,18 +127,24 @@ const Piece = ({ position, player, index }: PieceProps) => {
     };
   }, []);
 
-  // Enable/disable dragging based on whose turn it is,
-  // without recreating the Draggable instance
   useGSAP(() => {
     const instance = draggableRef.current?.[0];
     if (!instance) return;
 
-    if (isMyTurn) {
+    const isPlaced = corner === 0 || !!corner;
+
+    // Unplaced pieces can always be dragged on your turn (placement phase).
+    // Placed pieces can only be dragged once every piece is down (movement phase).
+    const Enabled = isMyTurn && (!isPlaced || AllPiecesPlaced);
+
+    if (Enabled) {
       instance.enable();
     } else {
       instance.disable();
     }
-  }, [isMyTurn]);
+
+    return () => instance.disable();
+  }, [isMyTurn, AllPiecesPlaced, corner]);
 
   return (
     <div

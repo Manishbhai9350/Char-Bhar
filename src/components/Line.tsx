@@ -9,7 +9,7 @@ export default function BoardLine({ corners, lines }: { corners: Corner[]; lines
         const end = corners[line.endPieceIndex].position;
         return (
           <line
-            key={i}
+            key={'line-'+i}
             x1={start.x}
             y1={start.y}
             x2={end.x}

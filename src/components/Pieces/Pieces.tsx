@@ -1,15 +1,16 @@
-import { PiecesData } from "../../context/game/game";
+import { useGame } from "../../context/game/game.hook";
 import Piece from "./Piece";
 
-const BOARD_WIDTH = innerWidth;
-const BOARD_PADDING = 40;
-const PER_POINT_GAP = (BOARD_WIDTH - 2 * BOARD_PADDING) / 3;
+// const BOARD_WIDTH = innerWidth;
+// const BOARD_PADDING = 40;
+// const PER_POINT_GAP = (BOARD_WIDTH - 2 * BOARD_PADDING) / 3;
 
 const Pieces = () => {
+  const { pieces } = useGame();
   return (
     <>
-      {PiecesData.map((p, i) => {
-        return <Piece {...p} key={i} />;
+      {pieces.map((p, i) => {
+        return <Piece {...p} key={'piece-'+i} />;
       })}
     </>
   );

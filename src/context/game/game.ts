@@ -12,6 +12,7 @@ export interface PieceProps {
   index: number;
   player: string;
   id: string;
+  corner?: number;
   position: {
     x: number;
     y: number;
@@ -28,6 +29,12 @@ export interface Corner {
   };
 }
 
+interface TryMovePieceReturn {
+  move: boolean | string;
+  corner?: Corner;
+  fromCorner?: Corner;
+}
+
 interface GameData {
   lines: Line[];
   setLines: Dispatch<SetStateAction<Line[]>>;
@@ -37,7 +44,11 @@ interface GameData {
   setCorners: Dispatch<SetStateAction<Corner[]>>;
   turn: string;
   setTurn: Dispatch<SetStateAction<Players>>;
-  TryMovePiece: (index: number, dropX: number, dropY: number) => boolean;
+  TryMovePiece: (
+    index: number,
+    dropX: number,
+    dropY: number,
+  ) => TryMovePieceReturn;
 }
 
 export const LinesData: Line[] = [
@@ -63,7 +74,7 @@ export const PiecesData: PieceProps[] = [
     player: "1",
     id: "1-1",
     position: {
-      x: 20,
+      x: 50,
       y: innerHeight / 2 - 100,
     },
   },
@@ -72,7 +83,7 @@ export const PiecesData: PieceProps[] = [
     player: "1",
     id: "1-2",
     position: {
-      x: 20,
+      x: 50,
       y: innerHeight / 2,
     },
   },
@@ -81,7 +92,7 @@ export const PiecesData: PieceProps[] = [
     player: "1",
     id: "1-3",
     position: {
-      x: 20,
+      x: 50,
       y: innerHeight / 2 + 100,
     },
   },
@@ -90,7 +101,7 @@ export const PiecesData: PieceProps[] = [
     player: "2",
     id: "2-1",
     position: {
-      x: innerWidth - 20 - 50,
+      x: innerWidth - 50,
       y: innerHeight / 2 - 100,
     },
   },
@@ -99,7 +110,7 @@ export const PiecesData: PieceProps[] = [
     player: "2",
     id: "2-2",
     position: {
-      x: innerWidth - 20 - 50,
+      x: innerWidth - 50,
       y: innerHeight / 2,
     },
   },
@@ -108,7 +119,7 @@ export const PiecesData: PieceProps[] = [
     player: "2",
     id: "2-3",
     position: {
-      x: innerWidth - 20 - 50,
+      x: innerWidth - 50,
       y: innerHeight / 2 + 100,
     },
   },
@@ -116,7 +127,39 @@ export const PiecesData: PieceProps[] = [
 
 export const CornersData: Corner[] = [];
 
+export type PossibleMoves = Record<number, number[]>;
 
+/**
+ * Builds a map of each corner index to the list of corners
+ * reachable from it in a single move — its neighbours, plus
+ * its own index (so "did it move to a valid spot, including
+ * staying in place" can be checked with one lookup).
+ *
+ * Each line contributes two adjacency pairs:
+ *   start <-> middle
+ *   middle <-> end
+ * (start <-> end is intentionally NOT a direct neighbour,
+ * since a piece can't hop over the middle corner.)
+ *
+ * @param lines - The board's line definitions (rows, columns, diagonals).
+ * @returns A map from corner index to itself + its neighbouring corner indices.
+ */
+export function buildPossibleMoves(lines: Line[]): PossibleMoves {
+  const moves: PossibleMoves = {};
+  for (let i = 0; i < 9; i++) moves[i] = [i]; // include self
+
+  const addNeighbour = (a: number, b: number) => {
+    if (!moves[a].includes(b)) moves[a].push(b);
+    if (!moves[b].includes(a)) moves[b].push(a);
+  };
+
+  lines.forEach(({ startPieceIndex, middlePieceIndex, endPieceIndex }) => {
+    addNeighbour(startPieceIndex, middlePieceIndex);
+    addNeighbour(middlePieceIndex, endPieceIndex);
+  });
+
+  return moves;
+}
 export const GameContext = createContext<GameData>({
   lines: LinesData,
   pieces: PiecesData,
@@ -126,5 +169,5 @@ export const GameContext = createContext<GameData>({
   setLines: () => {},
   setPieces: () => {},
   setTurn: () => {},
-  TryMovePiece: () => false,
+  TryMovePiece: () => ({ move: false }),
 });
