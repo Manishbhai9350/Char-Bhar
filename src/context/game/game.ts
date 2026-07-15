@@ -44,6 +44,10 @@ interface GameData {
   setCorners: Dispatch<SetStateAction<Corner[]>>;
   turn: string;
   setTurn: Dispatch<SetStateAction<Players>>;
+  AllPiecesPlaced: boolean;
+  setAllPiecesPlaced: Dispatch<SetStateAction<boolean>>;
+  MoveStarted: boolean;
+  setMoveStarted: Dispatch<SetStateAction<boolean>>;
   TryMovePiece: (
     index: number,
     dropX: number,
@@ -146,7 +150,7 @@ export type PossibleMoves = Record<number, number[]>;
  */
 export function buildPossibleMoves(lines: Line[]): PossibleMoves {
   const moves: PossibleMoves = {};
-  for (let i = 0; i < 9; i++) moves[i] = [i]; // include self
+  for (let i = 0; i < 9; i++) moves[i] = [];
 
   const addNeighbour = (a: number, b: number) => {
     if (!moves[a].includes(b)) moves[a].push(b);
@@ -170,4 +174,8 @@ export const GameContext = createContext<GameData>({
   setPieces: () => {},
   setTurn: () => {},
   TryMovePiece: () => ({ move: false }),
+  AllPiecesPlaced: false,
+  MoveStarted: false,
+  setAllPiecesPlaced: () => {},
+  setMoveStarted: () => {},
 });

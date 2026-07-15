@@ -1,7 +1,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { PieceProps } from "../../context/game/game";
 import { useGame } from "../../context/game/game.hook";
 
@@ -11,20 +11,14 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
   const pieceRef = useRef<HTMLDivElement>(null);
   const draggableRef = useRef<Draggable[] | null>(null);
 
-  const { turn, pieces, TryMovePiece, setPieces, setCorners, setTurn } =
-    useGame();
-
-  const AllPiecesPlaced = useMemo(() => {
-    let AllPlaced = true;
-
-    pieces.forEach((p) => {
-      if (p.corner !== 0 && !p.corner) {
-        AllPlaced = false;
-      }
-    });
-
-    return AllPlaced;
-  }, [pieces]);
+  const {
+    turn,
+    TryMovePiece,
+    setPieces,
+    setCorners,
+    setTurn,
+    AllPiecesPlaced,
+  } = useGame();
 
   // Always holds the latest TryMovePiece, updated every render
   const tryMovePieceRef = useRef(TryMovePiece);
@@ -55,28 +49,12 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
 
         const move = tryMovePieceRef.current(index, dropX, dropY);
 
-        if (move.move == "same") {
-          gsap.to(this.target, {
-            x: move.fromCorner?.position.x,
-            y: move.fromCorner?.position.y,
-            duration: 0.3,
-            ease: "power2.out",
-            onUpdate: function () {
-              //this.update();
-            },
-          });
-          return;
-        }
-
         if (!move.move) {
           gsap.to(this.target, {
-            x: position.x,
-            y: position.y,
+            x: move.fromCorner?.position.x ?? position.x,
+            y: move.fromCorner?.position.y ?? position.y,
             duration: 0.3,
             ease: "power2.out",
-            onUpdate: function () {
-              //this.update();
-            },
           });
           return;
         }

@@ -1,7 +1,10 @@
-import type { Corner, Line } from "../context/game/game";
+import { useGame } from "../context/game/game.hook";
 
 
-export default function BoardLine({ corners, lines }: { corners: Corner[]; lines: Line[] }) {
+export default function BoardLine() {
+
+  const { corners,lines } = useGame();
+
   return (
     <svg className="board-lines" width="100%" height="100%">
       {lines.map((line, i) => {

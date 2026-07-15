@@ -1,5 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
+  buildPossibleMoves,
   GameContext,
   LinesData,
   PiecesData,
@@ -7,6 +8,7 @@ import {
   type Players,
 } from "./game";
 import {
+  CheckWin,
   GetCornerPositionByIndex,
   squaredDistance,
 } from "../../utils/game.utils";
@@ -34,26 +36,67 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }),
   );
   const [Turn, setTurn] = useState<Players>("1");
+  const [AllPiecesPlaced, setAllPiecesPlaced] = useState(false);
+  const [MoveStarted, setMoveStarted] = useState(false);
 
-  // useEffect(() => {
-  //   const corners = new Array(9).fill("_").map((_, i) => {
-  //     const Position = GetCornerPositionByIndex(
-  //       i,
-  //       PER_POINT_GAP,
-  //       BOARD_PADDING,
-  //     );
-  //     return {
-  //       index: i,
-  //       player: null,
-  //       piece: null,
-  //       ...Position,
-  //     };
-  //   });
+  const PossibleMoves = useMemo(() => buildPossibleMoves(Lines), [Lines]);
 
-  //   setCorners(corners);
+  /**
+   * Finds the corner closest to a given drop coordinate.
+   *
+   * @param corner - The corner where player tried of move.
+   * @param index - The index of the piece.
+   * @param fromCornerIndex - The index of the corner from where user moved.
+   */
 
-  //   return () => {};
-  // }, []);
+  function validateMove(
+    corner: Corner,
+    index: number,
+    fromCornerIndex?: number,
+  ) {
+    let valid: boolean = true;
+
+    if (typeof corner.piece == "number" && corner.piece !== index) {
+      valid = false;
+      return valid;
+    }
+
+    if (typeof fromCornerIndex == "number") {
+      const ValidMoves = PossibleMoves[fromCornerIndex];
+      if (ValidMoves.indexOf(corner.index) < 0) {
+        valid = false;
+        return valid;
+      }
+    }
+
+    // Rule: can't win during placement — must move at least once first.
+    if (valid && !AllPiecesPlaced) {
+      console.log(Corners)
+      const dummyCorners = Corners.map((c) => {
+        if (c.index === corner.index)
+          return { ...c, piece: index, player: Turn };
+        if (
+          typeof fromCornerIndex === "number" &&
+          c.index === fromCornerIndex
+        ) {
+          return { ...c, piece: null, player: null };
+        }
+        return c;
+      });
+
+      console.log(
+        "dummy players:",
+        dummyCorners.map((c) => c.player),
+      );
+      const { win, who } = CheckWin(dummyCorners, Lines);
+      console.log("win check:", win, who, "placing as:", Turn);
+
+      if (win) valid = false;
+    }
+
+    return valid;
+  }
+
   /**
    * Finds the corner closest to a given drop coordinate.
    *
@@ -109,15 +152,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // Find which corner this piece is currently sitting on,
     // so the caller can clear it after a successful move.
     const fromCorner = Corners.find((c) => c.piece === index);
+    if (fromCorner?.index === corner.index) {
+      return { move: false, reason: "same-corner", fromCorner };
+    }
 
-    // If the nearest corner is the same one the piece started on,
-    // treat it as no move at all (e.g. user picked it up and dropped
-    // it back in roughly the same spot) rather than a valid move.
-    if (fromCorner?.index == corner.index)
-      return {
-        move: "same",
-        fromCorner,
-      };
+    const ValidMove = validateMove(corner, index, fromCorner?.index);
+
+    if (!ValidMove) {
+      return { move: false, reason: "invalid-move", fromCorner };
+    }
 
     return {
       move: true,
@@ -125,7 +168,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       fromCorner,
     };
   }
-
 
   return (
     <GameContext.Provider
@@ -139,6 +181,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setPieces,
         setTurn,
         TryMovePiece,
+        AllPiecesPlaced,
+        setAllPiecesPlaced,
+        MoveStarted,
+        setMoveStarted,
       }}
     >
       {children}
