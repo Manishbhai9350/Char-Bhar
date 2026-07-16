@@ -20,6 +20,11 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
     AllPiecesPlaced,
   } = useGame();
 
+  const turnRef = useRef(turn);
+  useEffect(() => {
+    turnRef.current = turn;
+  }, [turn]);
+
   // Always holds the latest TryMovePiece, updated every render
   const tryMovePieceRef = useRef(TryMovePiece);
   useEffect(() => {
@@ -62,7 +67,7 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
         setCorners((crns) => {
           const updated = crns.map((C) => {
             if (C.index === move.corner?.index) {
-              return { ...C, piece: index, player: turn };
+              return { ...C, piece: index, player: turnRef.current };
             }
             if (C.index === move.fromCorner?.index) {
               return { ...C, piece: null, player: null };

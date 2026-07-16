@@ -3,9 +3,10 @@ import { useGame } from "../context/game/game.hook";
 import BoardLine from "./Line";
 import Pieces from "./Pieces/Pieces";
 import Corners from "./corners/Corners";
+import { CheckWin } from "../utils/game.utils";
 
 const Board = () => {
-  const { setAllPiecesPlaced, pieces } = useGame();
+  const { setAllPiecesPlaced, pieces, corners, lines } = useGame();
 
   useEffect(() => {
     let AllPlaced = true;
@@ -17,6 +18,18 @@ const Board = () => {
     });
     setAllPiecesPlaced(AllPlaced);
   }, [pieces, setAllPiecesPlaced]);
+
+  useEffect(() => {
+  
+    const win = CheckWin(corners, lines)
+
+    console.log(win)
+  
+    return () => {
+      
+    }
+  }, [corners,lines])
+  
 
   return (
     <div className="board">

@@ -38,6 +38,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [Turn, setTurn] = useState<Players>("1");
   const [AllPiecesPlaced, setAllPiecesPlaced] = useState(false);
   const [MoveStarted, setMoveStarted] = useState(false);
+  const [Win, setWin] = useState<{ win: boolean; who?: "1" | "2" }>({
+    win: false,
+  });
 
   const PossibleMoves = useMemo(() => buildPossibleMoves(Lines), [Lines]);
 
@@ -71,7 +74,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // Rule: can't win during placement — must move at least once first.
     if (valid && !AllPiecesPlaced) {
-      console.log(Corners)
+      console.log(Corners);
       const dummyCorners = Corners.map((c) => {
         if (c.index === corner.index)
           return { ...c, piece: index, player: Turn };
@@ -84,12 +87,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         return c;
       });
 
-      console.log(
-        "dummy players:",
-        dummyCorners.map((c) => c.player),
-      );
-      const { win, who } = CheckWin(dummyCorners, Lines);
-      console.log("win check:", win, who, "placing as:", Turn);
+      const { win } = CheckWin(dummyCorners, Lines);
 
       if (win) valid = false;
     }
