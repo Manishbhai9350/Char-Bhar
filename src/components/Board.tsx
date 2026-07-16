@@ -6,7 +6,7 @@ import Corners from "./corners/Corners";
 import { CheckWin } from "../utils/game.utils";
 
 const Board = () => {
-  const { setAllPiecesPlaced, pieces, corners, lines } = useGame();
+  const { setAllPiecesPlaced, pieces, corners, lines, setWin } = useGame();
 
   useEffect(() => {
     let AllPlaced = true;
@@ -20,16 +20,16 @@ const Board = () => {
   }, [pieces, setAllPiecesPlaced]);
 
   useEffect(() => {
-  
-    const win = CheckWin(corners, lines)
+    const win = CheckWin(corners, lines);
 
-    console.log(win)
-  
-    return () => {
-      
+    console.log(win);
+
+    if (win.win) {
+      setWin(win);
     }
-  }, [corners,lines])
-  
+
+    return () => {};
+  }, [corners, lines]);
 
   return (
     <div className="board">

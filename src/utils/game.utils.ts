@@ -1,4 +1,4 @@
-import type { Corner, Line } from "../context/game/game";
+import type { Corner, Line, WinProps } from "../context/game/game";
 
 export const GetCornerPositionByIndex = (
   i: number,
@@ -18,9 +18,9 @@ export const squaredDistance = (
   y2: number,
 ) => (x2 - x1) ** 2 + (y2 - y1) ** 2;
 
-export const CheckWin = (corners: Corner[], lines: Line[]) => {
+export const CheckWin = (corners: Corner[], lines: Line[]): WinProps => {
   let win = false;
-  let who;
+  let who: '1' | '2' | undefined;
 
   // Use .every because other methods can not be break;
   for (let i = 0; i < lines.length; i++) {

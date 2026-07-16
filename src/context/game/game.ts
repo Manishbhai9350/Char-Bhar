@@ -1,6 +1,5 @@
 import { createContext, type Dispatch, type SetStateAction } from "react";
 
-export type Players = "1" | "2";
 
 export interface Line {
   startPieceIndex: number;
@@ -19,14 +18,21 @@ export interface PieceProps {
   };
 }
 
+export type PlayerProp = "1" | "2" | null;
+
 export interface Corner {
   index: number;
-  player: string | null;
+  player: PlayerProp;
   piece: number | null;
   position: {
     x: number;
     y: number;
   };
+}
+
+export interface WinProps {
+  win: boolean;
+  who?: "1" | "2";
 }
 
 interface TryMovePieceReturn {
@@ -42,12 +48,14 @@ interface GameData {
   setPieces: Dispatch<SetStateAction<PieceProps[]>>;
   corners: Corner[];
   setCorners: Dispatch<SetStateAction<Corner[]>>;
-  turn: string;
-  setTurn: Dispatch<SetStateAction<Players>>;
+  turn: PlayerProp;
+  setTurn: Dispatch<SetStateAction<PlayerProp>>;
   AllPiecesPlaced: boolean;
   setAllPiecesPlaced: Dispatch<SetStateAction<boolean>>;
   MoveStarted: boolean;
   setMoveStarted: Dispatch<SetStateAction<boolean>>;
+  win: WinProps;
+  setWin: Dispatch<SetStateAction<WinProps>>;
   TryMovePiece: (
     index: number,
     dropX: number,
@@ -178,4 +186,6 @@ export const GameContext = createContext<GameData>({
   MoveStarted: false,
   setAllPiecesPlaced: () => {},
   setMoveStarted: () => {},
+  win: { win: false },
+  setWin: () => {},
 });

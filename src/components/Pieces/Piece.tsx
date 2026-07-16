@@ -2,7 +2,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { useEffect, useRef } from "react";
-import type { PieceProps } from "../../context/game/game";
+import type { PieceProps, PlayerProp } from "../../context/game/game";
 import { useGame } from "../../context/game/game.hook";
 
 gsap.registerPlugin(Draggable);
@@ -20,7 +20,7 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
     AllPiecesPlaced,
   } = useGame();
 
-  const turnRef = useRef(turn);
+  const turnRef = useRef<PlayerProp>(turn);
   useEffect(() => {
     turnRef.current = turn;
   }, [turn]);

@@ -5,7 +5,7 @@ import {
   LinesData,
   PiecesData,
   type Corner,
-  type Players,
+  type PlayerProp,
 } from "./game";
 import {
   CheckWin,
@@ -35,7 +35,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       };
     }),
   );
-  const [Turn, setTurn] = useState<Players>("1");
+  const [Turn, setTurn] = useState<PlayerProp>("1");
   const [AllPiecesPlaced, setAllPiecesPlaced] = useState(false);
   const [MoveStarted, setMoveStarted] = useState(false);
   const [Win, setWin] = useState<{ win: boolean; who?: "1" | "2" }>({
@@ -183,6 +183,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setAllPiecesPlaced,
         MoveStarted,
         setMoveStarted,
+        win: Win,
+        setWin
       }}
     >
       {children}
