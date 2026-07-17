@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { useGame } from "../context/game/game.hook";
-import BoardLine from "./Line";
-import Pieces from "./Pieces/Pieces";
-import Corners from "./corners/Corners";
-import { CheckWin } from "../utils/game.utils";
+import { useGame } from "../../context/game/game.hook";
+import BoardLine from "../lines/Line";
+import Pieces from "../Pieces/Pieces";
+import Corners from "./../corners/Corners";
+import { CheckWin } from "../../utils/game.utils";
 
 const Board = () => {
   const { setAllPiecesPlaced, pieces, corners, lines, setWin } = useGame();

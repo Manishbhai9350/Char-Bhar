@@ -1,4 +1,4 @@
-import { useGame } from "../context/game/game.hook";
+import { useGame } from "../../context/game/game.hook";
 
 
 export default function BoardLine() {

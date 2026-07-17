@@ -25,6 +25,9 @@
   --text-primary: #2c2c2a;
   --text-secondary: #5f5e5a;
 
+  /* --- Buttons --- */
+  --select-bg:#854f0b;
+
   --point-radius: 16px;
   --board-radius: 12px;
 }
@@ -39,7 +42,7 @@ body {
   background: var(--page-bg);
   color: var(--text-primary);
   font-family: system-ui, sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .board-wrapper {
