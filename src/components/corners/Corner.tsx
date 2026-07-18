@@ -8,7 +8,7 @@ interface CornerProps {
 
 const Corner = ({ position, index }: CornerProps) => {
   return (
-    <div style={{ left: position.x, top: position.y }} className="point valid-move">{index}</div>
+    <div onClick={() => alert(index)} style={{ left: position.x, top: position.y }} className="point valid-move">{index}</div>
   );
 };
 

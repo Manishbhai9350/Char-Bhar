@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { useRef, useState, type JSX } from "react";
 import "./css/home.css";
 import RulesPopup from "./components/RulesPopup";
+import { useNavigate } from "react-router-dom";
 
 interface ModeOption {
   id: "single" | "local" | "online";
@@ -432,12 +433,14 @@ function ModeCard({
   );
 }
 
-export default function Home({
-  onSelectMode,
-}: {
-  onSelectMode: (mode: ModeOption["id"]) => void;
-}) {
+export default function Home() {
   const [OnRules, setOnRules] = useState(false);
+
+  const nav = useNavigate();
+
+  const onSelect = (mode: ModeOption["id"]) => {
+    nav({ pathname: `/${mode}` });
+  };
 
   return (
     <div className="home">
@@ -470,7 +473,7 @@ export default function Home({
 
       <section className="home__modes" aria-label="Choose a game mode">
         {MODES.map((mode) => (
-          <ModeCard key={mode.id} mode={mode} onSelect={onSelectMode} />
+          <ModeCard key={mode.id} mode={mode} onSelect={onSelect} />
         ))}
       </section>
 

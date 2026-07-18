@@ -347,6 +347,7 @@
 }
 
 .rules-popup {
+  display: none;
   width: min(80vw, 480px);
   max-height: 80vh;
   overflow-y: auto;

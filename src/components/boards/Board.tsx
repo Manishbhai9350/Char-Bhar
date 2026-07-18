@@ -29,7 +29,7 @@ const Board = () => {
     }
 
     return () => {};
-  }, [corners, lines]);
+  }, [corners, lines, setWin]);
 
   return (
     <div className="board">

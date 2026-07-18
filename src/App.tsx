@@ -1,16 +1,18 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-// import Board from "./components/boards/Board";
 import Home from "./components/home/home";
-import { GameProvider } from "./context/game/game.provider";
+import Local from "./pages/local/local";
 
 const App = () => {
   return (
-    <GameProvider>
-      <div className="char-bhar">
-        <Home />
-        {/* <Board /> */}
-      </div>
-    </GameProvider>
+    <div className="char-bhar">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/local" element={<Local />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 };
 
