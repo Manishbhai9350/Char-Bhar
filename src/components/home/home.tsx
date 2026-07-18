@@ -1,7 +1,8 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef, type JSX } from "react";
+import { useRef, useState, type JSX } from "react";
 import "./css/home.css";
+import RulesPopup from "./components/RulesPopup";
 
 interface ModeOption {
   id: "single" | "local" | "online";
@@ -74,7 +75,80 @@ const STORY_TRAP_1: Step[] = [
   { type: "win", corners: [1, 4, 7], winner: "teal" },
 ];
 
-const STORIES = [STORY_TRAP_1,STORY_DIAGONAL_STEAL,STORY_CENTER_COLUMN];
+const STORY_TRAP_2: Step[] = [
+  {
+    type: "place",
+    corner: 0,
+    pieceIndex: 0,
+    player: "teal",
+  },
+  {
+    type: "place",
+    corner: 2,
+    pieceIndex: 0,
+    player: "coral",
+  },
+  {
+    type: "place",
+    corner: 1,
+    pieceIndex: 1,
+    player: "teal",
+  },
+  {
+    type: "place",
+    corner: 7,
+    pieceIndex: 1,
+    player: "coral",
+  },
+  {
+    type: "place",
+    corner: 8,
+    pieceIndex: 2,
+    player: "teal",
+  },
+  {
+    type: "place",
+    corner: 3,
+    pieceIndex: 2,
+    player: "coral",
+  },
+  {
+    type: "move",
+    corner: 5,
+    pieceIndex: 2,
+    player: "teal",
+  },
+  {
+    type: "move",
+    corner: 4,
+    pieceIndex: 1,
+    player: "coral",
+  },
+  {
+    type: "move",
+    corner: 8,
+    pieceIndex: 2,
+    player: "teal",
+  },
+  {
+    type: "move",
+    corner: 5,
+    pieceIndex: 0,
+    player: "coral",
+  },
+  {
+    type: "win",
+    corners: [3, 4, 5],
+    winner: "coral",
+  },
+];
+
+const STORIES = [
+  STORY_TRAP_2,
+  STORY_TRAP_1,
+  STORY_DIAGONAL_STEAL,
+  STORY_CENTER_COLUMN,
+];
 
 function playScript(
   script: Step[],
@@ -132,7 +206,8 @@ function playScript(
             opacity: 1,
             duration: 0.3,
             onStart: () => {
-              label.textContent = `Player ${step.winner === "teal" ? "1" : "2"} wins`;
+              label.style.textTransform = "capitalize";
+              label.textContent = `${step.winner} wins`;
             },
           },
           "<",
@@ -362,15 +437,22 @@ export default function Home({
 }: {
   onSelectMode: (mode: ModeOption["id"]) => void;
 }) {
+  const [OnRules, setOnRules] = useState(false);
+
   return (
     <div className="home">
       <header className="home__header">
         <div className="home__wordmark">
-          <span className="home__devanagari">चौबार</span>
+          <span className="home__devanagari">चरभर</span>
           <span className="home__label">Char Bhar</span>
         </div>
         <nav className="home__nav">
-          <button className="home__nav-link">Rules</button>
+          <div className="rules__nav__con">
+            <button onClick={() => setOnRules(true)} className="home__nav-link">
+              Rules
+            </button>
+            <RulesPopup open={OnRules} setOpen={setOnRules} />
+          </div>
           <button
             className="home__nav-link home__nav-icon"
             aria-label="Toggle sound"

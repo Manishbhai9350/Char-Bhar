@@ -26,7 +26,7 @@
   --text-secondary: #5f5e5a;
 
   /* --- Buttons --- */
-  --select-bg:#854f0b;
+  --select-bg: #854f0b;
 
   --point-radius: 16px;
   --board-radius: 12px;
@@ -38,11 +38,54 @@
   box-sizing: border-box;
 }
 
+/* ==========================================================================
+   Universal scrollbar styling — applies to every scrollable element
+   (html, .rules-popup, or anything with overflow: auto/scroll).
+   Add this once to a global stylesheet (e.g. index.css / theme.css).
+   ========================================================================== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cb-marigold) transparent;
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--cb-marigold);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cb-chalk);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-button:vertical {
+  display: none;
+}
+
 body {
   background: var(--page-bg);
   color: var(--text-primary);
   font-family: system-ui, sans-serif;
   overflow-x: hidden;
+  background: var(--board-bg);
 }
 
 .board-wrapper {
@@ -56,7 +99,6 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: var(--board-bg);
   border-radius: var(--board-radius);
   padding: 40px;
 }
