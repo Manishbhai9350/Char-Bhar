@@ -22,14 +22,24 @@ const Board = () => {
   useEffect(() => {
     const win = CheckWin(corners, lines);
 
-    console.log(win);
-
     if (win.win) {
       setWin(win);
     }
 
     return () => {};
   }, [corners, lines, setWin]);
+
+  useEffect(() => {
+    console.log(pieces);
+
+    return () => {};
+  }, [pieces]);
+
+  useEffect(() => {
+    console.log(corners);
+
+    return () => {};
+  }, [corners]);
 
   return (
     <div className="board">

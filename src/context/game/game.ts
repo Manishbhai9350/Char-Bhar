@@ -1,6 +1,5 @@
 import { createContext, type Dispatch, type SetStateAction } from "react";
 
-
 export interface Line {
   startPieceIndex: number;
   middlePieceIndex: number;
@@ -41,7 +40,13 @@ interface TryMovePieceReturn {
   fromCorner?: Corner;
 }
 
+export type ModeType = "single" | "local" | "multiplayer" | null;
+
 interface GameData {
+  currentPlayer: PlayerProp;
+  setCurrentPlayer: Dispatch<SetStateAction<PlayerProp>>;
+  mode: ModeType;
+  setMode: Dispatch<SetStateAction<ModeType>>;
   lines: Line[];
   setLines: Dispatch<SetStateAction<Line[]>>;
   pieces: PieceProps[];
@@ -175,6 +180,10 @@ export function buildPossibleMoves(lines: Line[]): PossibleMoves {
 export const GameContext = createContext<GameData>({
   lines: LinesData,
   pieces: PiecesData,
+  currentPlayer: null,
+  setCurrentPlayer: () => {},
+  mode: null,
+  setMode: () => {},
   turn: Math.random() < 0.5 ? "1" : "2",
   corners: CornersData,
   setCorners: () => {},

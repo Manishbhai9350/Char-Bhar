@@ -1,38 +1,49 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import type { PieceProps, PlayerProp } from "../../context/game/game";
 import { useGame } from "../../context/game/game.hook";
 
-gsap.registerPlugin(Draggable);
+gsap.registerPlugin(useGSAP, Draggable);
 
 const Piece = ({ position, player, index, corner }: PieceProps) => {
   const pieceRef = useRef<HTMLDivElement>(null);
   const draggableRef = useRef<Draggable[] | null>(null);
 
   const {
+    mode,
     turn,
     TryMovePiece,
     setPieces,
     setCorners,
     setTurn,
     AllPiecesPlaced,
+    currentPlayer,
   } = useGame();
 
   const turnRef = useRef<PlayerProp>(turn);
-  useEffect(() => {
+  useGSAP(() => {
     turnRef.current = turn;
   }, [turn]);
 
-  // Always holds the latest TryMovePiece, updated every render
+  // Always holds the latest TryMovePiece, so Draggable's callbacks
+  // (created once, on mount) never call a stale closure.
   const tryMovePieceRef = useRef(TryMovePiece);
-  useEffect(() => {
+  useGSAP(() => {
     tryMovePieceRef.current = TryMovePiece;
   }, [TryMovePiece]);
 
-  const isMyTurn = turn === player;
+  // Guards against the position-sync effect re-animating a piece
+  // that this component *itself* just finished animating via drag.
+  const skipNextPositionSync = useRef(false);
+  const hasMounted = useRef(false);
 
+  const isMyTurn =
+    (turn === player && turn === currentPlayer) ||
+    (turn === player && mode === "local");
+
+  // ---- Mount: create the draggable ONCE, place the piece instantly ----
   useGSAP(() => {
     gsap.set(pieceRef.current, {
       ...position,
@@ -64,8 +75,8 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
           return;
         }
 
-        setCorners((crns) => {
-          const updated = crns.map((C) => {
+        setCorners((crns) =>
+          crns.map((C) => {
             if (C.index === move.corner?.index) {
               return { ...C, piece: index, player: turnRef.current };
             }
@@ -73,21 +84,21 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
               return { ...C, piece: null, player: null };
             }
             return C;
-          });
-
-          return updated;
-        });
+          }),
+        );
 
         setTurn((t) => (t === "1" ? "2" : "1"));
+
+        // This tween IS the drop animation. Tell the position-sync
+        // effect (below) to skip once, so it doesn't re-tween the
+        // same move a second time when `position` updates in state.
+        skipNextPositionSync.current = true;
 
         gsap.to(this.target, {
           x: move.corner!.position.x,
           y: move.corner!.position.y,
           duration: 0.3,
           ease: "power2.out",
-          onUpdate: function () {
-            //this.update();
-          },
           onComplete: () => {
             setPieces((pieces) =>
               pieces.map((p) =>
@@ -105,22 +116,42 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
       },
     });
 
+    hasMounted.current = true;
+
     return () => {
       draggableRef.current?.[0]?.kill();
     };
   }, []);
 
+  // ---- Position sync: animate to `position` whenever it changes for   ----
+  // ---- any reason OTHER than this component's own drag-drop above.    ----
+  useGSAP(() => {
+    console.log("position sync fired", index, position);
+    if (!hasMounted.current) return;
+    if (skipNextPositionSync.current) {
+      skipNextPositionSync.current = false;
+      return;
+    }
+    gsap.to(pieceRef.current, {
+      ...position,
+      xPercent: -50,
+      yPercent: -50,
+      duration: 0.3,
+    });
+  }, [position]);
+
+  // ---- Enable/disable dragging based on turn/phase ----
   useGSAP(() => {
     const instance = draggableRef.current?.[0];
     if (!instance) return;
 
     const isPlaced = corner === 0 || !!corner;
 
-    // Unplaced pieces can always be dragged on your turn (placement phase).
+    // Unplaced pieces can be dragged on your turn (placement phase).
     // Placed pieces can only be dragged once every piece is down (movement phase).
-    const Enabled = isMyTurn && (!isPlaced || AllPiecesPlaced);
+    const enabled = isMyTurn && (!isPlaced || AllPiecesPlaced);
 
-    if (Enabled) {
+    if (enabled) {
       instance.enable();
     } else {
       instance.disable();

@@ -5,6 +5,7 @@ import {
   LinesData,
   PiecesData,
   type Corner,
+  type ModeType,
   type PlayerProp,
 } from "./game";
 import {
@@ -41,6 +42,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [Win, setWin] = useState<{ win: boolean; who?: "1" | "2" }>({
     win: false,
   });
+  const [mode, setMode] = useState<ModeType>(null);
+  const [CurrentPlayer, setCurrentPlayer] = useState<PlayerProp>(null);
 
   const PossibleMoves = useMemo(() => buildPossibleMoves(Lines), [Lines]);
 
@@ -74,7 +77,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // Rule: can't win during placement — must move at least once first.
     if (valid && !AllPiecesPlaced) {
-      console.log(Corners);
       const dummyCorners = Corners.map((c) => {
         if (c.index === corner.index)
           return { ...c, piece: index, player: Turn };
@@ -170,6 +172,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   return (
     <GameContext.Provider
       value={{
+        currentPlayer: CurrentPlayer,
+        setCurrentPlayer,
+        mode,
+        setMode,
         lines: Lines,
         pieces: Pieces,
         turn: Turn,
@@ -184,7 +190,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         MoveStarted,
         setMoveStarted,
         win: Win,
-        setWin
+        setWin,
       }}
     >
       {children}
