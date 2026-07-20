@@ -41,9 +41,12 @@ const SinglePlayer = () => {
         const move = GetBotMove(
           corners,
           pieces,
+          lines,
           PossibleMoves,
           AIPlayer,
+          AIPlayer == "1" ? "2" : "1",
           AllPiecesPlaced,
+          "hard",
         );
 
         if (!move || !move.MoveCorner || !move.MovePiece) {
