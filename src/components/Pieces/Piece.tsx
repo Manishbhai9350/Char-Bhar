@@ -126,7 +126,6 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
   // ---- Position sync: animate to `position` whenever it changes for   ----
   // ---- any reason OTHER than this component's own drag-drop above.    ----
   useGSAP(() => {
-    console.log("position sync fired", index, position);
     if (!hasMounted.current) return;
     if (skipNextPositionSync.current) {
       skipNextPositionSync.current = false;

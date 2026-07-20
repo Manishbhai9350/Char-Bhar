@@ -29,18 +29,6 @@ const Board = () => {
     return () => {};
   }, [corners, lines, setWin]);
 
-  useEffect(() => {
-    console.log(pieces);
-
-    return () => {};
-  }, [pieces]);
-
-  useEffect(() => {
-    console.log(corners);
-
-    return () => {};
-  }, [corners]);
-
   return (
     <div className="board">
       <Pieces />

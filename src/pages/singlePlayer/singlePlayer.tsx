@@ -1,47 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Board from "../../components/boards/Board";
 import { useGame } from "../../context/game/game.hook";
-import {
-  type Corner,
-  type PieceProps,
-  type PlayerProp,
-} from "../../context/game/game";
-
-function GetBotMove(
-  corners: Corner[],
-  pieces: PieceProps[],
-  aiPlayer: PlayerProp,
-  allPlaced: boolean,
-) {
-  const PossibleCorners = corners.filter(
-    (C) => C.player !== "1" && C.player !== "2",
-  );
-
-  const PossiblePieces = pieces.filter(
-    (P) => !P.corner && P.player == aiPlayer,
-  );
-
-  let MoveCorner, MovePiece, move;
-
-  if (!allPlaced) {
-    const randomCorner = Math.floor(Math.random() * PossibleCorners.length);
-    const randomPiece = Math.floor(Math.random() * PossiblePieces.length);
-    const Corner = PossibleCorners[randomCorner];
-    const Piece = PossiblePieces[randomPiece];
-
-    MoveCorner = Corner;
-    MovePiece = Piece;
-    move = "place";
-  } else {
-    // TODO?? Bot Move
-  }
-
-  return {
-    move,
-    MoveCorner,
-    MovePiece,
-  };
-}
+import { buildPossibleMoves } from "../../context/game/game";
+import { GetBotMove } from "./utils/bot.util";
 
 const SinglePlayer = () => {
   const {
@@ -55,7 +16,10 @@ const SinglePlayer = () => {
     pieces,
     setPieces,
     setCorners,
+    lines,
   } = useGame();
+
+  const PossibleMoves = useMemo(() => buildPossibleMoves(lines), [lines]);
 
   const AiMoveTimeout = useRef(0);
 
@@ -66,39 +30,46 @@ const SinglePlayer = () => {
     return () => {
       setMode(null);
     };
-  }, []);
-
+  }, [setCurrentPlayer, setMode, setTurn]);
   useEffect(() => {
     if (turn && currentPlayer && turn !== currentPlayer) {
       clearTimeout(AiMoveTimeout.current);
 
       AiMoveTimeout.current = setTimeout(() => {
-        const AIPlayer = currentPlayer == "1" ? "2" : "1";
-        const move = GetBotMove(corners, pieces, AIPlayer, AllPiecesPlaced);
+        const AIPlayer = turn; // whoever's turn it is right now IS the AI, in this branch
 
-        console.log(move);
+        const move = GetBotMove(
+          corners,
+          pieces,
+          PossibleMoves,
+          AIPlayer,
+          AllPiecesPlaced,
+        );
 
-        setPieces((Ps) => {
-          if (!move.MoveCorner || !move.MovePiece) return Ps; // nothing to update, bail safely
+        if (!move || !move.MoveCorner || !move.MovePiece) {
+          return;
+        }
 
-          const Updated = Ps.map((P) => {
-            return P.index === move.MovePiece!.index
-              ? {
-                  ...P,
-                  corner: move.MoveCorner!.index,
-                  player: AIPlayer,
-                  position: move.MoveCorner!.position,
-                }
-              : P;
-          });
+        const { MoveCorner, MovePiece } = move;
+        const fromCornerIndex = MovePiece.corner;
 
-          return Updated;
-        });
-        setPieces((Ps) => {
-          const { MoveCorner, MovePiece } = move;
-          if (!MoveCorner || !MovePiece) return Ps;
+        setCorners((crns) =>
+          crns.map((c) => {
+            if (c.index === MoveCorner.index) {
+              return { ...c, piece: MovePiece.index, player: AIPlayer };
+            }
+            if (
+              typeof fromCornerIndex === "number" &&
+              c.index === fromCornerIndex
+            ) {
+              return { ...c, piece: null, player: null };
+            }
+            return c;
+          }),
+        );
 
-          return Ps.map((P) =>
+        setPieces((Ps) =>
+          Ps.map((P) =>
             P.index === MovePiece.index
               ? {
                   ...P,
@@ -107,10 +78,10 @@ const SinglePlayer = () => {
                   position: MoveCorner.position,
                 }
               : P,
-          );
-        });
+          ),
+        );
 
-        setTurn((T) => (T == "1" ? "2" : "1"));
+        setTurn((T) => (T === "1" ? "2" : "1"));
       }, 1000);
     }
 
@@ -126,8 +97,9 @@ const SinglePlayer = () => {
     AllPiecesPlaced,
     setCorners,
     setPieces,
+    lines,
+    PossibleMoves,
   ]);
-
   return (
     <div className="single-player">
       <p>Turn For {turn}</p>
