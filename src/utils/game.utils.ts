@@ -1,5 +1,7 @@
 import type { Corner, Line, WinProps } from "../context/game/game";
 
+const OFFSET = 30;
+
 export const GetCornerPositionByIndex = (
   i: number,
   PER_POINT_GAP: number,
@@ -7,7 +9,7 @@ export const GetCornerPositionByIndex = (
 ) => {
   return {
     x: ((i % 3) + 0.5) * PER_POINT_GAP + BOARD_PADDING,
-    y: innerHeight / 2 - PER_POINT_GAP + Math.floor(i / 3) * PER_POINT_GAP,
+    y: OFFSET + innerHeight / 2 - PER_POINT_GAP + Math.floor(i / 3) * PER_POINT_GAP,
   };
 };
 

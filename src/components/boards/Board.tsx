@@ -4,6 +4,7 @@ import BoardLine from "../lines/Line";
 import Pieces from "../Pieces/Pieces";
 import Corners from "./../corners/Corners";
 import { CheckWin } from "../../utils/game.utils";
+import PlayersUI from "../player/player.ui";
 
 const Board = () => {
   const { setAllPiecesPlaced, pieces, corners, lines, setWin } = useGame();
@@ -31,6 +32,7 @@ const Board = () => {
 
   return (
     <div className="board">
+      <PlayersUI />
       <Pieces />
       <Corners />
       <BoardLine />

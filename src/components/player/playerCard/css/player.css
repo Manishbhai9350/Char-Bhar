@@ -1,3 +1,11 @@
+:root {
+  --card-border-color: #854f0b;
+  --card-text-color: #faeeda;
+  --avatar-progress-color: rgb(216, 95, 74);
+  --life-color-live: seagreen;
+  --life-color-dead: rgb(216, 95, 74);
+}
+
 @property --progress {
   syntax: "<percentage>";
   inherits: false;
@@ -10,23 +18,56 @@ img {
   object-fit: cover;
 }
 
+.scores {
+  width: 100%;
+  height: 80px;
+  position: absolute;
+  top: 30px;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  .seperator {
+    width: 3px;
+    height: 40px;
+    background: rgb(168, 115, 46);
+  }
+  .left,
+  .right {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: rgba(167, 146, 119, 0.331);
+  }
+  .left.active,
+  .right.active {
+    color: rgb(167, 146, 119);
+  }
+}
+
 .player-card {
+  top: 30px;
   position: absolute;
   width: min(40vw, 200px);
   height: 80px;
-  margin-top: 20px;
   padding: 10px 10px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 10px;
+  gap: 13px;
+  transition: all ease-in .6s;
+  &.player-card--active .avatar-ring {
+    animation: meow 15s linear infinite;
+  }
   .avatar-ring {
     height: 100%;
     aspect-ratio: 1;
     border-radius: 5px;
     padding: 3px;
-    background: conic-gradient(#156b15 var(--progress), #e0e0e0 0deg);
-    animation: meow 15s linear infinite;
+    background: conic-gradient(
+      var(--avatar-progress-color) var(--progress),
+      #e0e0e0 0deg
+    );
     .avatar {
       height: 100%;
       width: 100%;
@@ -62,61 +103,38 @@ img {
       .life {
         height: 100%;
         aspect-ratio: 1;
-        background: #156b15;
+        background: var(--life-color-live);
         border-radius: 2px;
+      }
+      .life.done {
+        background-color: var(--life-color-dead);
       }
     }
   }
 }
 
 .player-card-left {
+  opacity: 0.5;
   left: 0;
   right: auto;
   justify-content: flex-start;
-  &::before,
-  &::after {
-    content: "";
-    width: 80%;
-    height: 2px;
-    background: gray;
-    position: absolute;
-    top: 0;
-    right: auto;
-    left: 0;
-  }
-  &::after {
-    top: auto;
-    bottom: 0;
-    width: 100%;
-  }
 }
 .player-card-right {
+  opacity: 0.5;
   left: auto;
   right: 0;
   justify-content: flex-end;
   flex-direction: row-reverse;
-  &::before,
-  &::after {
-    content: "";
-    width: 80%;
-    height: 2px;
-    background: gray;
-    position: absolute;
-    top: 0;
-    left: auto;
-    right: 0;
-  }
-  &::after {
-    top: auto;
-    bottom: 0;
-    width: 100%;
-  }
   .name {
     text-align: right !important;
   }
   .content .lifes {
     justify-content: flex-end !important;
   }
+}
+
+.player-card--active {
+  opacity: 1;
 }
 
 @keyframes meow {

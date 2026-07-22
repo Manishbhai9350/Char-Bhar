@@ -84,6 +84,9 @@ export const LinesData: Line[] = [
   { startPieceIndex: 2, middlePieceIndex: 4, endPieceIndex: 6 },
 ];
 
+const PIECES_INITIAL_GAP = 100;
+const OFFSET = 30;
+
 // The id of each piece represents its player and piece number p-n respectively;
 export const PiecesData: PieceProps[] = [
   {
@@ -92,7 +95,7 @@ export const PiecesData: PieceProps[] = [
     id: "1-1",
     position: {
       x: 50,
-      y: innerHeight / 2 - 100,
+      y: OFFSET + innerHeight / 2 - PIECES_INITIAL_GAP,
     },
   },
   {
@@ -101,7 +104,7 @@ export const PiecesData: PieceProps[] = [
     id: "1-2",
     position: {
       x: 50,
-      y: innerHeight / 2,
+      y: OFFSET + innerHeight / 2,
     },
   },
   {
@@ -110,7 +113,7 @@ export const PiecesData: PieceProps[] = [
     id: "1-3",
     position: {
       x: 50,
-      y: innerHeight / 2 + 100,
+      y: OFFSET + innerHeight / 2 + PIECES_INITIAL_GAP,
     },
   },
   {
@@ -119,7 +122,7 @@ export const PiecesData: PieceProps[] = [
     id: "2-1",
     position: {
       x: innerWidth - 50,
-      y: innerHeight / 2 - 100,
+      y: OFFSET + innerHeight / 2 - PIECES_INITIAL_GAP,
     },
   },
   {
@@ -128,7 +131,7 @@ export const PiecesData: PieceProps[] = [
     id: "2-2",
     position: {
       x: innerWidth - 50,
-      y: innerHeight / 2,
+      y: OFFSET + innerHeight / 2,
     },
   },
   {
@@ -137,7 +140,7 @@ export const PiecesData: PieceProps[] = [
     id: "2-3",
     position: {
       x: innerWidth - 50,
-      y: innerHeight / 2 + 100,
+      y: OFFSET + innerHeight / 2 + PIECES_INITIAL_GAP,
     },
   },
 ];

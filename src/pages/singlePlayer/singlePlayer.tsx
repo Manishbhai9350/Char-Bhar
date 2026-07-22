@@ -105,7 +105,6 @@ const SinglePlayer = () => {
   ]);
   return (
     <div className="single-player">
-      <p>Turn For {turn}</p>
       <Board />
     </div>
   );
