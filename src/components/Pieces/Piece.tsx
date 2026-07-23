@@ -20,6 +20,7 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
     setTurn,
     AllPiecesPlaced,
     currentPlayer,
+    win,
   } = useGame();
 
   const turnRef = useRef<PlayerProp>(turn);
@@ -40,8 +41,9 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
   const hasMounted = useRef(false);
 
   const isMyTurn =
-    (turn === player && turn === currentPlayer) ||
-    (turn === player && mode === "local");
+    ((turn === player && turn === currentPlayer) ||
+      (turn === player && mode === "local")) &&
+    !win.win;
 
   // ---- Mount: create the draggable ONCE, place the piece instantly ----
   useGSAP(() => {
@@ -164,8 +166,10 @@ const Piece = ({ position, player, index, corner }: PieceProps) => {
       ref={pieceRef}
       className={`piece player-${player} ${isMyTurn ? "turn" : ""}`}
     >
+      {corner == 4 && <div className="piece-shine"></div>}
       <div className="ring ring-1"></div>
       <div className="ring ring-2"></div>
+      <div className="ring ring-3"></div>
     </div>
   );
 };

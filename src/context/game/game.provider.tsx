@@ -44,6 +44,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   });
   const [mode, setMode] = useState<ModeType>(null);
   const [CurrentPlayer, setCurrentPlayer] = useState<PlayerProp>(null);
+  const [Scores, setScores] = useState({
+    player1: 0,
+    player2: 0,
+  });
 
   const PossibleMoves = useMemo(() => buildPossibleMoves(Lines), [Lines]);
 
@@ -191,6 +195,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         setMoveStarted,
         win: Win,
         setWin,
+        scores: Scores,
+        setScores,
       }}
     >
       {children}

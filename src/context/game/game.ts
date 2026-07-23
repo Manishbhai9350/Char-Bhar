@@ -1,5 +1,10 @@
 import { createContext, type Dispatch, type SetStateAction } from "react";
 
+export interface ScoreProps {
+  player1: number;
+  player2: number;
+}
+
 export interface Line {
   startPieceIndex: number;
   middlePieceIndex: number;
@@ -61,6 +66,8 @@ interface GameData {
   setMoveStarted: Dispatch<SetStateAction<boolean>>;
   win: WinProps;
   setWin: Dispatch<SetStateAction<WinProps>>;
+  scores: ScoreProps;
+  setScores: Dispatch<SetStateAction<ScoreProps>>;
   TryMovePiece: (
     index: number,
     dropX: number,
@@ -200,4 +207,9 @@ export const GameContext = createContext<GameData>({
   setMoveStarted: () => {},
   win: { win: false },
   setWin: () => {},
+  scores:{
+    player1:0,
+    player2:0,
+  },
+  setScores: () => {}
 });

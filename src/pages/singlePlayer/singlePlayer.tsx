@@ -17,6 +17,7 @@ const SinglePlayer = () => {
     setPieces,
     setCorners,
     lines,
+    win: GameWon,
   } = useGame();
 
   const PossibleMoves = useMemo(() => buildPossibleMoves(lines), [lines]);
@@ -35,8 +36,11 @@ const SinglePlayer = () => {
     if (turn && currentPlayer && turn !== currentPlayer) {
       clearTimeout(AiMoveTimeout.current);
 
-      AiMoveTimeout.current = setTimeout(() => {
-        const AIPlayer = turn; // whoever's turn it is right now IS the AI, in this branch
+      AiMoveTimeout.current = window.setTimeout(() => {
+        // 🛑 CRITICAL FIX: re-check latest state
+        if (GameWon.win) return;
+
+        const AIPlayer = turn;
 
         const move = GetBotMove(
           corners,
@@ -49,9 +53,7 @@ const SinglePlayer = () => {
           "hard",
         );
 
-        if (!move || !move.MoveCorner || !move.MovePiece) {
-          return;
-        }
+        if (!move || !move.MoveCorner || !move.MovePiece) return;
 
         const { MoveCorner, MovePiece } = move;
         const fromCornerIndex = MovePiece.corner;
@@ -93,15 +95,16 @@ const SinglePlayer = () => {
     };
   }, [
     turn,
-    setTurn,
     currentPlayer,
     corners,
     pieces,
     AllPiecesPlaced,
-    setCorners,
-    setPieces,
     lines,
     PossibleMoves,
+    GameWon.win, // 👈 IMPORTANT (not whole object)
+    setPieces,
+    setCorners,
+    setTurn,
   ]);
   return (
     <div className="single-player">

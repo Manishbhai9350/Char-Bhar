@@ -35,14 +35,38 @@ img {
   }
   .left,
   .right {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
     font-size: 1.7rem;
     font-weight: 700;
     color: rgba(167, 146, 119, 0.331);
+    transition: all .4s ease-in;
   }
   .left.active,
   .right.active {
     color: rgb(167, 146, 119);
   }
+}
+.score {
+  height: 2rem;
+  width: 2rem;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.score .current,
+.score .upcoming {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
 }
 
 .player-card {
@@ -55,7 +79,7 @@ img {
   justify-content: flex-start;
   align-items: center;
   gap: 13px;
-  transition: all ease-in .6s;
+  transition: all ease-in 0.6s;
   &.player-card--active .avatar-ring {
     animation: meow 15s linear infinite;
   }
