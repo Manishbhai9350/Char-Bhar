@@ -7,7 +7,7 @@ export default function BoardLine() {
 
   return (
     <svg className="board-lines" width="100%" height="100%">
-      {lines.map((line, i) => {
+      {lines.length && corners.length && lines.map((line, i) => {
         const start = corners[line.startPieceIndex].position;
         const end = corners[line.endPieceIndex].position;
         return (

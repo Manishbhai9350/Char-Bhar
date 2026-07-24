@@ -1,8 +1,15 @@
 import { createContext, type Dispatch, type SetStateAction } from "react";
+import { GetDeviceMode } from "../../utils/config.utils";
 
-export interface ScoreProps {
-  player1: number;
-  player2: number;
+export interface PlayerStateProps {
+  player1: {
+    score: number;
+    lifes: number;
+  };
+  player2: {
+    score: number;
+    lifes: number;
+  };
 }
 
 export interface Line {
@@ -47,6 +54,31 @@ interface TryMovePieceReturn {
 
 export type ModeType = "single" | "local" | "multiplayer" | null;
 
+const BOARD_WIDTH = innerWidth;
+const BOARD_PADDING = 40;
+const PER_POINT_GAP = (BOARD_WIDTH - 2 * BOARD_PADDING) / 3;
+
+export interface AppConfig {
+  mode: "mobile" | "tablet" | "desktop";
+
+  // board
+  board_size: number;
+  board_padding: number;
+  per_point_gap: number;
+  board_start_x: number;
+
+  // pieces
+  piece_offset_x: number;
+  piece_gap: number;
+
+  // layout helpers
+  centerX: number;
+  centerY: number;
+
+  // optional but useful
+  offsetY: number;
+};
+
 interface GameData {
   currentPlayer: PlayerProp;
   setCurrentPlayer: Dispatch<SetStateAction<PlayerProp>>;
@@ -66,8 +98,11 @@ interface GameData {
   setMoveStarted: Dispatch<SetStateAction<boolean>>;
   win: WinProps;
   setWin: Dispatch<SetStateAction<WinProps>>;
-  scores: ScoreProps;
-  setScores: Dispatch<SetStateAction<ScoreProps>>;
+  playerStates: PlayerStateProps;
+  setPlayerStates: Dispatch<SetStateAction<PlayerStateProps>>;
+  toast: string;
+  setToast: Dispatch<SetStateAction<string>>;
+  config: AppConfig;
   TryMovePiece: (
     index: number,
     dropX: number,
@@ -207,9 +242,30 @@ export const GameContext = createContext<GameData>({
   setMoveStarted: () => {},
   win: { win: false },
   setWin: () => {},
-  scores:{
-    player1:0,
-    player2:0,
+  playerStates: {
+    player1: {
+      lifes: 3,
+      score: 0,
+    },
+    player2: {
+      lifes: 3,
+      score: 0,
+    },
   },
-  setScores: () => {}
+  setPlayerStates: () => {},
+  toast: "",
+  setToast: () => {},
+
+  config: {
+    mode: GetDeviceMode(innerWidth,/* innerHeight */),
+    board_padding: BOARD_PADDING,
+    per_point_gap: PER_POINT_GAP,
+    centerY: innerHeight / 2,
+    piece_gap:0,
+    piece_offset_x:0,
+    board_size:0,
+    board_start_x:0,
+    centerX:innerWidth/2,
+    offsetY:0
+  },
 });

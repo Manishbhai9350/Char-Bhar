@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useGame } from "../../context/game/game.hook";
 import BoardLine from "../lines/Line";
 import Pieces from "../Pieces/Pieces";
@@ -9,6 +9,8 @@ import { PiecesData } from "../../context/game/game";
 
 const Board = () => {
   const {
+    turn,
+    currentPlayer,
     setAllPiecesPlaced,
     pieces,
     setPieces,
@@ -16,8 +18,10 @@ const Board = () => {
     setCorners,
     lines,
     setWin,
-    setScores,
+    playerStates,
+    setPlayerStates,
     win: GameWon,
+    setToast,
   } = useGame();
 
   useEffect(() => {
@@ -32,29 +36,37 @@ const Board = () => {
   }, [pieces, setAllPiecesPlaced]);
 
   const TimeoutID = useRef(0);
+  const PlayerLifeTimeoutID = useRef(0);
 
   useEffect(() => {
-    if (GameWon.win) return; // 🛑 STOP if already won
+    if (GameWon.win || !corners.length || !lines.length || !pieces.length) return; // 🛑 STOP if already won
     clearTimeout(TimeoutID.current);
 
     const win = CheckWin(corners, lines);
 
     if (win.win) {
       if (win.who == "1") {
-        setScores((s) => ({
+        setPlayerStates((s) => ({
           ...s,
-          player1: s.player1 + 1,
+          player1: {
+            ...s.player2,
+            score: s.player1.score + 1,
+          },
         }));
       }
 
       if (win.who == "2") {
-        setScores((s) => ({
+        setPlayerStates((s) => ({
           ...s,
-          player2: s.player2 + 1,
+          player2: {
+            ...s.player2,
+            score: s.player2.score + 1,
+          },
         }));
       }
 
       setWin(win); // 🔒 lock
+      setToast(`Player ${win.who} won 🎉`);
 
       TimeoutID.current = window.setTimeout(() => {
         setPieces(PiecesData);
@@ -69,17 +81,59 @@ const Board = () => {
 
         setAllPiecesPlaced(false);
         setWin({ win: false, who: undefined });
-      }, 2000);
+        setToast("");
+      }, 4000);
     }
 
     return () => {};
-  }, [corners, lines, GameWon.win]); // 👈 IMPORTANT deps
+  }, [corners, lines, GameWon.win, setToast]); // 👈 IMPORTANT deps
+
+  useEffect(() => {
+    clearTimeout(PlayerLifeTimeoutID.current);
+
+    const TimeOut = () => {
+      if (turn == currentPlayer) {
+        PlayerLifeTimeoutID.current = setTimeout(() => {
+          setPlayerStates((Ps) => {
+            return {
+              ...Ps,
+              player1: {
+                ...Ps.player1,
+                lifes: Ps.player1.lifes - 1,
+              },
+            };
+          });
+
+          if (playerStates.player1.lifes - 1 == 0) {
+            alert("All Lifes Gone");
+          }
+
+          if (turn == currentPlayer) {
+            TimeOut();
+          }
+        }, 1000 * 15);
+      }
+    };
+    TimeOut();
+
+    return () => clearTimeout(PlayerLifeTimeoutID.current);
+  }, [turn, currentPlayer]);
+
+  const Render = useMemo(
+    () => corners.length && lines.length && pieces.length,
+    [corners, lines, pieces],
+  );
+
   return (
     <div className="board">
-      <PlayersUI />
-      <Pieces />
-      <Corners />
-      <BoardLine />
+      {Render && (
+        <>
+          <PlayersUI />
+          <Pieces />
+          <Corners />
+          <BoardLine />
+        </>
+      )}
     </div>
   );
 };

@@ -1,0 +1,19 @@
+.toaster {
+  width: fit-content;
+  height: 40px;
+  background: #854f0b;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 13;
+  border-radius: 7px;
+  padding-inline: 1rem;
+  p {
+    line-height: 2.2rem;
+    color: #faeeda;
+    font-size: 1.2rem;
+    font-width: 500;
+  }
+
+}

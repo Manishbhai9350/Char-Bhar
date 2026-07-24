@@ -1,9 +1,9 @@
 :root {
   --card-border-color: #854f0b;
   --card-text-color: #faeeda;
-  --avatar-progress-color: rgb(216, 95, 74);
+  --avatar-progress-color: #d85f4a;
   --life-color-live: seagreen;
-  --life-color-dead: rgb(216, 95, 74);
+  --life-color-dead: #d85f4a;
 }
 
 @property --progress {
@@ -43,7 +43,7 @@ img {
     font-size: 1.7rem;
     font-weight: 700;
     color: rgba(167, 146, 119, 0.331);
-    transition: all .4s ease-in;
+    transition: all 0.4s ease-in;
   }
   .left.active,
   .right.active {
@@ -129,8 +129,9 @@ img {
         aspect-ratio: 1;
         background: var(--life-color-live);
         border-radius: 2px;
+        transition: all 0.3s ease-in;
       }
-      .life.done {
+      .life.life--lost {
         background-color: var(--life-color-dead);
       }
     }
@@ -164,8 +165,16 @@ img {
 @keyframes meow {
   0% {
     --progress: 0%;
+    --avatar-progress-color: seagreen;
+  }
+  59% {
+    --avatar-progress-color: seagreen;
+  }
+  60% {
+    --avatar-progress-color: #d85f4a;
   }
   100% {
     --progress: 100%;
+    --avatar-progress-color: #d85f4a;
   }
 }

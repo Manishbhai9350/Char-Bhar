@@ -6,10 +6,9 @@ interface PlayerCardProps {
   player: "1" | "2";
   avatarUrl?: string;
   progress?: number; // 0-100, drives the ring around the avatar
-  livesTotal?: number;
-  livesLost?: number;
   isActive?: boolean;
   side?: "left" | "right";
+  lifes: number;
 }
 
 export default function PlayerCard({
@@ -17,10 +16,9 @@ export default function PlayerCard({
   player,
   avatarUrl,
   progress = 100,
-  livesTotal = 3,
-  livesLost = 0,
   isActive = false,
   side = "left",
+  lifes = 3,
 }: PlayerCardProps) {
   const colorClass =
     player === "1" ? "player-card--teal" : "player-card--coral";
@@ -41,10 +39,10 @@ export default function PlayerCard({
       <div className="content">
         <div className="name">{name}</div>
         <div className="lifes">
-          {Array.from({ length: livesTotal }).map((_, i) => (
+          {Array.from({ length: 3 }).map((_, i) => (
             <span
               key={i}
-              className={`life ${i < livesLost ? "life--lost" : ""}`}
+              className={`life ${i > lifes - 1 ? "life--lost" : ""}`}
             />
           ))}
         </div>

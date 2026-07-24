@@ -3,6 +3,7 @@ import Board from "../../components/boards/Board";
 import { useGame } from "../../context/game/game.hook";
 import { buildPossibleMoves } from "../../context/game/game";
 import { GetBotMove } from "./utils/bot.util";
+import Toast from "../../components/toast/toast";
 
 const SinglePlayer = () => {
   const {
@@ -108,6 +109,7 @@ const SinglePlayer = () => {
   ]);
   return (
     <div className="single-player">
+      <Toast />
       <Board />
     </div>
   );

@@ -92,7 +92,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
 }
 
 .board {
@@ -100,7 +99,6 @@ body {
   width: 100vw;
   height: 100vh;
   border-radius: var(--board-radius);
-  padding: 40px;
 }
 
 .line {

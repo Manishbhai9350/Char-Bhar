@@ -5,13 +5,13 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 const PlayersUI = () => {
-  const { turn, scores } = useGame();
+  const { turn, playerStates } = useGame();
 
   const PlayerOneScoreRef = useRef<HTMLDivElement | null>(null);
   const PlayerTwoScoreRef = useRef<HTMLDivElement | null>(null);
 
   useGSAP(() => {
-    console.log(scores.player1)
+    console.log(playerStates.player1.score);
     const container = PlayerOneScoreRef.current;
     if (!container) return;
 
@@ -21,7 +21,7 @@ const PlayersUI = () => {
     if (!current || !upcoming) return;
 
     // set upcoming value
-    upcoming.innerText = String(scores.player1);
+    upcoming.innerText = String(playerStates.player1.score);
 
     // place upcoming below
     gsap.set(upcoming, { yPercent: 100 });
@@ -43,10 +43,10 @@ const PlayersUI = () => {
         gsap.set(current, { yPercent: 100 });
       },
     });
-  }, [scores.player1]);
+  }, [playerStates.player1.score]);
 
   useGSAP(() => {
-    console.log(scores.player2)
+    console.log(playerStates.player2.score);
     const container = PlayerTwoScoreRef.current;
     if (!container) return;
 
@@ -56,7 +56,7 @@ const PlayersUI = () => {
     if (!current || !upcoming) return;
 
     // set upcoming value
-    upcoming.innerText = String(scores.player2);
+    upcoming.innerText = String(playerStates.player2.score);
 
     // place upcoming below
     gsap.set(upcoming, { yPercent: 100 });
@@ -78,14 +78,15 @@ const PlayersUI = () => {
         gsap.set(current, { yPercent: 100 });
       },
     });
-  }, [scores.player2]);
+  }, [playerStates.player2.score]);
 
   return (
     <>
       <PlayerCard
-        name="Manish"
+        name="You"
         isActive={turn == "1"}
         player="1"
+        lifes={playerStates.player1.lifes}
         avatarUrl="/images/avatars/a1.png"
       />
       <div className="scores">
@@ -108,6 +109,7 @@ const PlayersUI = () => {
         name="Bot"
         isActive={turn == "2"}
         player="2"
+        lifes={playerStates.player2.lifes}
         avatarUrl="https://media.istockphoto.com/id/1130320134/vector/cute-robot-character-chatbot-icon.jpg?s=612x612&w=0&k=20&c=A6vKE6rSFFvNmjzjRgM9UHQF_hXzNk6SZfMbVHJXao8="
       />
     </>
